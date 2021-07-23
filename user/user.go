@@ -2,18 +2,23 @@ package user
 
 import (
 	"fmt"
+	"os"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
-	_ "gorm.io/driver/mysql"
+	"github.com/joho/godotenv"
+	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
 var (
-	DB  *gorm.DB
-	err error
+	DB       *gorm.DB
+	err      error
+	DSN      string
+	user     string
+	pwd      string
+	database string
 )
-
-const DSN = "conexãocomMySQL"
 
 type User struct {
 	gorm.Model
@@ -22,13 +27,22 @@ type User struct {
 	Email     string `json:"email"`
 }
 
+func init() {
+	godotenv.Load()
+	user = strings.Trim(os.Getenv("MYSQL_USR"), " ")
+	pwd = strings.Trim(os.Getenv("MYSQL_PWD"), " ")
+	database = strings.Trim(os.Getenv("MYSQL_DATABASE"), " ")
+	DSN = user + ":" + pwd + "@tcp(127.0.0.1:3306)/" + database + "?charset=utf8mb4&parseTime=True&loc=Local"
+}
+
 func InitialMigration() {
-	// DB, err = gorm.Open(mysql.Open(DSN), &gorm.Config{})
-	// if err != nil {
-	// 	fmt.Println(err.Error())
-	// 	fmt.Println("Cannot connect to Database")
-	// 	// panic("Cannot connect to Database")
-	// }
+	fmt.Printf("DSN: %s", DSN)
+	DB, err = gorm.Open(mysql.Open(DSN), &gorm.Config{})
+	if err != nil {
+		fmt.Println(err.Error())
+		fmt.Println("Cannot connect to Database")
+		// panic("Cannot connect to Database")
+	}
 
 	// DB.AutoMigrate(&User{})
 	fmt.Println("Cannot connect to Database")
@@ -53,7 +67,7 @@ func SaveUser(c *fiber.Ctx) error {
 		return c.Status(500).SendString(err.Error())
 	}
 
-	DB.Save(&user)
+	DB.Create(&user)
 	return c.JSON(&user)
 }
 
