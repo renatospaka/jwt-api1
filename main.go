@@ -11,10 +11,10 @@ func hello(c *fiber.Ctx) error {
 
 func Routers(app *fiber.App) {
 	app.Get("/users", user.GetUsers)
-	app.Get("/users/:id", user.GetUser)
+	app.Get("/user/:id", user.GetUser)
 	app.Post("/user", user.SaveUser)
 	app.Put("/user/:id", user.UpdateUser)
-	app.Delete("/users/:id", user.DeleteUser)
+	app.Delete("/user/:id", user.DeleteUser)
 }
 
 func main() {

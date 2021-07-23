@@ -44,7 +44,7 @@ func InitialMigration() {
 		// panic("Cannot connect to Database")
 	}
 
-	// DB.AutoMigrate(&User{})
+	DB.AutoMigrate(&User{})
 	fmt.Println("Cannot connect to Database")
 }
 
